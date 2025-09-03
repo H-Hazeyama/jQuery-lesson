@@ -20,20 +20,36 @@
       // 「ポケモンを探す」後の画面表示
       let encountHtml =
       `
-        <p class="name"></p>
+      <p class="name"></p>
+      <div>
+      <img class="img" src="" alt="ポケモン画像">
+      </div>
+      <div>
+      <button class="btn" id="catch">捕まえる</button>
+      <button class="btn" data-js="reset">逃げる</button>
+      </div>
+      `
+      // 「捕まえる」成功時の画面表示
+      let doneHtml =
+      `
+        <p class="name">ゲットしました</p>
         <div>
-          <img class="img" src="" alt="ポケモン画像">
+          <img class="img" src="" alt="">
         </div>
-        <div>
-          <button class="btn" id="catch">捕まえる</button>
-          <button class="btn" data-js="reset">逃げる</button>
-        </div>
+        <button class="btn" data-js="reset">戻る</button>
+      `
+      // 「捕まえる」失敗時の画面表示
+      let failHtml =
+      `
+        <p class="text">逃げられてしまった...</p>
+        <button class="btn mt" data-js="reset">戻る</button>
       `
       $('.search-btn').click(function() {
-        console.log('ここまで');
         $(this).hide();
+        let id = Math.floor(Math.random() * 151) + 1;
+        console.log(id);
         $.ajax({
-          url: 'https://pokeapi.co/api/v2/pokemon/1',
+          url: `https://pokeapi.co/api/v2/pokemon/${id}`,
           method: 'GET'
         }).done(function(res) {
           let imgPokemon = res.sprites.other["official-artwork"].front_default;
