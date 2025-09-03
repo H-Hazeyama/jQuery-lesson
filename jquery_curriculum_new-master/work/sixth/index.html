@@ -16,6 +16,34 @@
   <script src="../../common/js/jquery.js"></script>
   <script>
     // 回答はここに書いてね
+    $(function() {
+      // 「ポケモンを探す」後の画面表示
+      let encountHtml =
+      `
+        <p class="name"></p>
+        <div>
+          <img class="img" src="" alt="ポケモン画像">
+        </div>
+        <div>
+          <button class="btn" id="catch">捕まえる</button>
+          <button class="btn" data-js="reset">逃げる</button>
+        </div>
+      `
+      $('.search-btn').click(function() {
+        console.log('ここまで');
+        $(this).hide();
+        $.ajax({
+          url: 'https://pokeapi.co/api/v2/pokemon/1',
+          method: 'GET'
+        }).done(function(res) {
+          let imgPokemon = res.sprites.other["official-artwork"].front_default;
+          $('.wrapper').append(encountHtml);
+          $('.img').attr('src', imgPokemon);
+        }).fail(function(err) {
+          console.log('ここまで');
+        });
+      })
+    });
   </script>
 </body>
 </html>
