@@ -47,7 +47,6 @@
       $('.search-btn').click(function() {
         $(this).hide();
         let id = Math.floor(Math.random() * 151) + 1;
-        console.log(id);
         $.ajax({
           url: `https://pokeapi.co/api/v2/pokemon/${id}`,
           method: 'GET'
@@ -55,9 +54,24 @@
           let imgPokemon = res.sprites.other["official-artwork"].front_default;
           $('.wrapper').append(encountHtml);
           $('.img').attr('src', imgPokemon);
+
+          if (Math.random() > 0.5) {
+            $('#catch').click(function() {
+              console.log('捕まえる');
+              // encountHtml.hide();
+              // $('.wrapper').append(doneHtml);
+              // $('.img').attr('src', imgPokemon);
+            });
+          } else {
+            $data('js').click(function() {
+              console.log('逃げる');
+              $('.wrapper').append(failHtml);
+            });
+          }
         }).fail(function(err) {
-          console.log('ここまで');
+          console.log('接続できません。');
         });
+
       })
     });
   </script>
