@@ -44,30 +44,31 @@
         <p class="text">逃げられてしまった...</p>
         <button class="btn mt" data-js="reset">戻る</button>
       `
+      // ポケモンを探すボタン押下
       $('.search-btn').click(function() {
-        $(this).hide();
         let id = Math.floor(Math.random() * 151) + 1;
         $.ajax({
           url: `https://pokeapi.co/api/v2/pokemon/${id}`,
           method: 'GET'
         }).done(function(res) {
+          // ポケモン出現
           let imgPokemon = res.sprites.other["official-artwork"].front_default;
-          $('.wrapper').append(encountHtml);
+          $('.wrapper').html(encountHtml);
           $('.img').attr('src', imgPokemon);
-
-          if (Math.random() > 0.5) {
-            $('#catch').click(function() {
-              console.log('捕まえる');
-              // encountHtml.hide();
-              // $('.wrapper').append(doneHtml);
-              // $('.img').attr('src', imgPokemon);
-            });
-          } else {
-            $data('js').click(function() {
-              console.log('逃げる');
-              $('.wrapper').append(failHtml);
-            });
-          }
+          // 捕まえるボタン押下
+          $('#catch').click(function() {
+            if (Math.random() > 0.5) {
+              $('.wrapper').html(doneHtml);
+              $('.img').attr('src', imgPokemon);
+              $('.btn').click(function() {
+                console.log('戻るボタンが押された');
+                // $('.wrapper').html('元のページに戻りたい');
+              });
+            } else {
+              $('.wrapper').html(failHtml);
+              $('.img').attr('src', imgPokemon);
+            }
+          });
         }).fail(function(err) {
           console.log('接続できません。');
         });
