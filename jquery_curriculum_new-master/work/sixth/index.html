@@ -19,7 +19,6 @@
     $(function() {
       // ポケモンを探す
       function search() {
-        console.log('押した');
         let id = Math.floor(Math.random() * 151) + 1;
         $.ajax({
           url: `https://pokeapi.co/api/v2/pokemon/${id}`,
