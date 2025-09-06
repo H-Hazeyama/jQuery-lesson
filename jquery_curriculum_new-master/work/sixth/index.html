@@ -17,62 +17,91 @@
   <script>
     // 回答はここに書いてね
     $(function() {
-      // 「ポケモンを探す」後の画面表示
-      let encountHtml =
-      `
-      <p class="name"></p>
-      <div>
-      <img class="img" src="" alt="ポケモン画像">
-      </div>
-      <div>
-      <button class="btn" id="catch">捕まえる</button>
-      <button class="btn" data-js="reset">逃げる</button>
-      </div>
-      `
-      // 「捕まえる」成功時の画面表示
-      let doneHtml =
-      `
-        <p class="name">ゲットしました</p>
-        <div>
-          <img class="img" src="" alt="">
-        </div>
-        <button class="btn" data-js="reset">戻る</button>
-      `
-      // 「捕まえる」失敗時の画面表示
-      let failHtml =
-      `
-        <p class="text">逃げられてしまった...</p>
-        <button class="btn mt" data-js="reset">戻る</button>
-      `
-      // ポケモンを探すボタン押下
-      $('.search-btn').click(function() {
+      // ポケモンを探す
+      function search() {
+        console.log('押した');
         let id = Math.floor(Math.random() * 151) + 1;
         $.ajax({
           url: `https://pokeapi.co/api/v2/pokemon/${id}`,
           method: 'GET'
         }).done(function(res) {
-          // ポケモン出現
-          let imgPokemon = res.sprites.other["official-artwork"].front_default;
-          $('.wrapper').html(encountHtml);
-          $('.img').attr('src', imgPokemon);
-          // 捕まえるボタン押下
-          $('#catch').click(function() {
-            if (Math.random() > 0.5) {
-              $('.wrapper').html(doneHtml);
-              $('.img').attr('src', imgPokemon);
-              $('.btn').click(function() {
-                console.log('戻るボタンが押された');
-                // $('.wrapper').html('元のページに戻りたい');
-              });
-            } else {
-              $('.wrapper').html(failHtml);
-              $('.img').attr('src', imgPokemon);
-            }
-          });
-        }).fail(function(err) {
-          console.log('接続できません。');
+          async function getPokemonName(id) {
+            let pokemon = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}`);
+            let pokemonObject = await pokemon.json();
+            let pokemonName = pokemonObject.names.find(n => n.language.name === 'ja');
+            return pokemonName ? pokemonName.name : '日本語名が設定されていません';
+          }
+          (async () => {
+            let pokemonName = await getPokemonName(id);
+            $('.name').text(pokemonName);
+          })();
+          //ポケモン出現
+          let encountHtml =
+          `
+          <p class="name"></p>
+          <div>
+          <img class="img" src="${res.sprites.front_default}" alt="ポケモン画像">
+          </div>
+          <div>
+          <button class="btn" id="catch">捕まえる</button>
+          <button class="btn" data-js="reset">逃げる</button>
+          </div>
+          `
+          $('#wrapper').html(encountHtml);
+        }).fail(function() {
+          console.log('ポケモン画像が出力できませんでした。');
         });
+      }
 
+      // 初期画面表示
+      function reset() {
+        $(document).on('click', "[data-js]", function() {
+          $('.wrapper').html('<button type="button" class="btn search-btn" id="pokemon_search">ポケモンを探す</button>');
+        });
+      }
+
+      // ポケモンを捕まえる
+      function doCatch() {
+        if (Math.random() < 0.5) {
+          $.ajax({
+            url: 'https://pokeapi.co/api/v2/item/4',
+            method: 'GET'
+          }).done(function(res) {
+            // 「捕まえる」成功時の画面表示
+            let doneHtml =
+            `
+            <p class="name">ゲットしました</p>
+            <div>
+            <img class="img" src="${res.sprites.default}" alt="">
+            </div>
+            <button class="btn" data-js="reset">戻る</button>
+            `
+            $('.wrapper').html(doneHtml);
+            reset();
+          }).fail(function() {
+            console.log('ボール画像が出力できませんでした。');
+          })
+        } else {
+          // 「捕まえる」失敗時の画面表示
+          let failHtml =
+          `
+          <p class="text">逃げられてしまった...</p>
+          <button class="btn mt" data-js="reset">戻る</button>
+          `
+          $('.wrapper').html(failHtml);
+          reset();
+        }
+      }
+
+      $(document).on('click', '.search-btn', function() {
+        search();
+      });
+      $(document).on('click', '.btn', function() {
+        if (this.id === 'catch') {
+          doCatch();
+        } else if ($(this).data('js') === 'reset') {
+          reset();
+        }
       })
     });
   </script>
